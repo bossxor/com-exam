@@ -1,0 +1,12 @@
+/pdf/
+/tools/src/
+/tmp/
+/dist/
+/web/data/kcci-*.js
+/web/data/ref-*.js
+/web/data/img/kcci-*
+/web/data/img/ref-*
+/android/.gradle/
+/android/local.properties/
+/android/**/build/
+*.apk

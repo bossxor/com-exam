@@ -1,0 +1,1 @@
+window.BANK_FILES = [];

@@ -3,5 +3,6 @@ window.BANK_FILES = [
   "ref-01.js", "ref-02.js", "ref-03.js", "ref-04.js",
   "ref-05.js", "ref-06.js", "ref-07.js",
   "ai-01.js", "ai-02.js", "ai-03.js", "ai-04.js", "ai-05.js", "ai-06.js", "ai-07.js",
-  "ai-xl-01.js"
+  "ai-xl-01.js",
+  "ai-xl-02.js"
 ];

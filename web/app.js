@@ -42,8 +42,8 @@
   }
 
   function option(name, value, label, selected = false) {
-    return '<label><input type="radio" name="' + name + '" value="' + value + '"' +
-      (selected ? " checked" : "") + "> " + label + "</label>";
+    return '<label class="chip"><input type="radio" name="' + name + '" value="' + value + '"' +
+      (selected ? " checked" : "") + '><span>' + label + '</span></label>';
   }
 
   function home() {
@@ -56,31 +56,32 @@
     const groups = Object.entries(sources).map(([source, label]) => {
       const matches = banks.filter(bank => bank.source === source);
       if (!matches.length) return "";
-      return '<details class="bank-group" open><summary>' + label + ' ' + matches.length + '개</summary>' +
-        '<label><input type="checkbox" data-group="' + source + '" checked> ' + label + ' 전체 선택</label><div>' +
-        matches.map(bank => '<label><input type="checkbox" name="bank" data-source="' + source + '" value="' +
-          escape(bank.id) + '" checked> ' + escape(bank.title) + '</label>').join("") + '</div></details>';
+      return '<div class="group"><span class="group-head">' + label + ' · ' + matches.length + '회분</span><div class="chips">' +
+        '<label class="chip"><input type="checkbox" data-group="' + source + '" checked><span>전체</span></label>' +
+        matches.map(bank => '<label class="chip"><input type="checkbox" name="bank" data-source="' + source + '" value="' +
+          escape(bank.id) + '" checked><span>' + escape(bank.title) + '</span></label>').join("") + '</div></div>';
     }).join("");
     const cur = current();
-    render("home", '<h1 tabindex="-1">컴활 1급 필기 CBT</h1>' +
-      (!pool.length ? '<p>문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p>' : "") +
-      '<form id="settings"><fieldset><legend>모드</legend>' + option("mode", "study", "학습 모드", true) +
-      option("mode", "exam", "실전 모드 (60분)") + '</fieldset><fieldset><legend>문제집</legend>' + groups +
-      '</fieldset><fieldset><legend>과목</legend>' + Core.SUBJECTS.map((name, i) =>
-        '<label><input type="checkbox" name="subject" value="' + i + '" checked> ' + name + '</label>').join("") +
-      '</fieldset><fieldset><legend>필터</legend>' + option("filter", "all", "전체", true) +
+    render("home", '<header class="top"><div><h1 tabindex="-1">컴활 1급 필기 CBT</h1><p class="sub">총 ' + pool.length +
+      '문항 · 오답노트 ' + counts.wrong + ' · 별표 ' + counts.star + '</p></div>' + button("통계", "stats", 'class="ghost"') + '</header>' +
+      (!pool.length ? '<p class="empty">문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p>' : "") +
+      (cur ? '<section class="resume"><div><strong>풀던 세트가 있어요</strong><span>' +
+        escape(byId.get(cur.ids[cur.idx]).bankTitle) + ' · ' + (cur.idx + 1) + '/' + cur.ids.length + '</span></div>' +
+        button("이어서 풀기", "resume", 'class="primary"') + '</section>' : "") +
+      '<form id="settings"><fieldset><legend>모드</legend><div class="chips seg">' + option("mode", "study", "학습 모드", true) +
+      option("mode", "exam", "실전 모드 (60분)") + '</div></fieldset><fieldset><legend>문제집</legend>' + groups +
+      '</fieldset><fieldset><legend>과목</legend><div class="chips">' + Core.SUBJECTS.map((name, i) =>
+        '<label class="chip"><input type="checkbox" name="subject" value="' + i + '" checked><span>' + name + '</span></label>').join("") +
+      '</div></fieldset><fieldset><legend>필터</legend><div class="chips">' + option("filter", "all", "전체", true) +
       option("filter", "wrong", "오답노트 (" + counts.wrong + ")") +
       option("filter", "star", "별표 (" + counts.star + ")") +
       option("filter", "unseen", "안 푼 문제 (" + counts.unseen + ")") +
-      '</fieldset><fieldset><legend>문항 수</legend>' + option("count", "all", "전체") +
+      '</div></fieldset><fieldset><legend>문항 수</legend><div class="chips">' + option("count", "all", "전체") +
       option("count", "20", "20") + option("count", "60", "60", true) + option("count", "custom", "직접") +
-      '<input aria-label="직접 입력 문항 수" name="custom" type="number" min="1" max="' + Math.max(1, pool.length) + '" value="60" disabled>' +
-      '</fieldset><fieldset><legend>순서</legend>' + option("order", "original", "원래 순서") +
-      option("order", "random", "무작위", true) + '</fieldset><p id="set-status" role="status"></p><div class="actions">' +
-      '<button class="primary" id="start">시작</button>' +
-      (cur ? button("이어서 풀기 · " + escape(byId.get(cur.ids[cur.idx]).bankTitle) + " " +
-        (cur.idx + 1) + "/" + cur.ids.length, "resume") : "") +
-      button("통계", "stats") + '</div></form>');
+      '<input class="num" aria-label="직접 입력 문항 수" name="custom" type="number" inputmode="numeric" min="1" max="' +
+      Math.max(1, pool.length) + '" value="60" disabled></div></fieldset><fieldset><legend>순서</legend><div class="chips seg">' +
+      option("order", "original", "원래 순서") + option("order", "random", "무작위", true) +
+      '</div></fieldset><div class="dock"><p id="set-status" role="status"></p><button class="primary" id="start">시작</button></div></form>');
     updateSettings();
   }
 
@@ -152,17 +153,16 @@
     }
     const reviewed = !exam && selected != null;
     const star = !!record.q[q.id]?.star;
-    const progress = Array.from({ length: 20 }, (_, i) => '<span' +
-      (i < Math.ceil((cur.idx + 1) * 20 / cur.ids.length) ? ' class="filled"' : "") + '></span>').join("");
+    const pct = Math.round((cur.idx + 1) * 100 / cur.ids.length);
     const choices = q.choices.map((choice, i) => {
       const correct = reviewed && q.answer === i;
       const wrong = reviewed && selected === i && !correct;
       const tags = [correct ? "정답" : "", wrong ? "내 답" : "",
         reviewed && prior?.lastChoice === i && selected !== i ? "지난번 내 답" : ""].filter(Boolean).join(" · ");
       const circle = correct ? '<svg viewBox="0 0 36 36" aria-hidden="true"><path d="M25 5C14-1 3 9 3 19s7 15 16 14c10-1 16-8 14-17C32 9 26 4 19 5"/></svg>' : "";
-      return button('<span class="mark">' + (i + 1) + circle + '</span><span>' + escape(choice) +
-        (tags ? '<br><small>' + tags + '</small>' : "") + '</span>', "choice",
-        'class="choice' + (wrong ? " wrong" : "") + '" data-index="' + i + '" aria-pressed="' +
+      return button('<span class="mark">' + (i + 1) + circle + '</span><span class="ctext">' + escape(choice) +
+        (tags ? '<small>' + tags + '</small>' : "") + '</span>', "choice",
+        'class="choice' + (wrong ? " wrong" : "") + (correct ? " correct" : "") + '" data-index="' + i + '" aria-pressed="' +
         (selected === i) + '"' + (reviewed ? " disabled" : ""));
     }).join("");
     const controls = exam ?
@@ -175,15 +175,16 @@
       button(i + 1, "jump", 'data-index="' + i + '" aria-label="' + (i + 1) + "번 " +
         (cur.answers[i] == null ? "미응답" : "응답") + '" class="' + (cur.answers[i] == null ? "" : "answered") +
         '"' + (i === cur.idx ? ' aria-current="step"' : ""))).join("") + '</div></details>' : "";
-    render("question", '<div class="marks" aria-hidden="true">' + progress + '</div><div class="meta"><span>' +
-      escape(q.bankTitle) + ' · ' + Core.SUBJECTS[q.subject] + ' · ' + (cur.idx + 1) + '/' + cur.ids.length + '</span>' +
+    render("question", '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div><div class="qhead"><div class="qmeta"><span class="count">' +
+      (cur.idx + 1) + '<small>/' + cur.ids.length + '</small></span><span class="src">' + escape(q.bankTitle) + ' · ' +
+      Core.SUBJECTS[q.subject] + '</span></div>' +
       (exam ? '<time id="timer" aria-label="남은 시간">' + clock(cur.secondsLeft) + '</time>' : "") +
       '<div class="actions">' + button(star ? "★ 별표" : "☆ 별표", "star", 'aria-pressed="' + star + '"') +
       button("그만 풀기", "back") + '</div></div>' +
       (!exam && prior?.wrong ? '<p><span class="badge">이전 오답 ' + prior.wrong + '회</span></p>' : "") +
-      '<h1 class="question" tabindex="-1">' + q.n + '. ' + escape(q.text) + '</h1>' + visual(q) + choices +
-      '<div id="feedback" aria-live="polite">' + (reviewed ? '<section class="explanation"><strong>' +
-        (selected === q.answer ? "정답" : "오답") + ' · 정답 ' + (q.answer + 1) + '번</strong><br>' + escape(q.explanation) +
+      '<h1 class="question" tabindex="-1">' + escape(q.text) + '</h1>' + visual(q) + choices +
+      '<div id="feedback" aria-live="polite">' + (reviewed ? '<section class="explanation"><p class="verdict">' +
+        (selected === q.answer ? "정답" : "오답") + ' · 정답 ' + (q.answer + 1) + '번</p>' + escape(q.explanation) +
         '</section>' : "") + '</div>' + grid + '<div class="dock"><div class="actions">' + controls + '</div></div>');
     if (enter) {
       window.scrollTo(0, 0);
@@ -198,6 +199,7 @@
     if (cur.mode === "study") Core.applyAnswer(record, q.id, i, i === q.answer, Date.now());
     save();
     showQuestion();
+    if (cur.mode === "study") root.querySelector("#feedback").scrollIntoView({ block: "nearest" });
     root.querySelector(cur.mode === "study" ? '[data-action="next"]' : '[data-action="choice"][data-index="' + i + '"]').focus({ preventScroll: true });
   }
 
@@ -236,11 +238,13 @@
           (answer == null ? "미응답" : answer + 1 + "번") + ' · 정답 ' + (q.answer + 1) +
           '번</p><p class="explanation">' + escape(q.explanation) + '</p></details>';
       }).join("") : "";
-    render("result", '<h1 tabindex="-1">채점 결과</h1><p>총점 평균</p><p class="score">' + average + '점</p>' +
-      (passed == null ? "" : '<p class="pen"><strong>' + (passed ? "합격" : "불합격") + '</strong></p>') +
-      '<ul>' + perSubject.map(row => '<li>' + Core.SUBJECTS[row.subject] + ' ' + row.score + '점 (' +
-        row.correct + '/' + row.total + ')' + (row.score < 40 ? ' <strong class="pen">과락</strong>' : "") + '</li>').join("") +
-      '</ul><p>이번에 틀린 문제 ' + wrong.length + '개</p><div class="actions">' +
+    render("result", '<h1 tabindex="-1">채점 결과</h1><section class="scorecard"><p class="label">총점 평균</p><p class="score">' +
+      average + '<small>점</small></p>' + (passed == null ? "" : '<p class="verdict-pill ' + (passed ? "pass" : "fail") + '">' +
+      (passed ? "합격" : "불합격") + '</p>') + '</section>' + perSubject.map(row => '<div class="subj"><div class="srow"><span>' +
+      Core.SUBJECTS[row.subject] + '</span><b>' + row.score + '점</b></div><div class="bar" aria-hidden="true"><i' +
+      (row.score < 40 ? ' class="low"' : "") + ' style="width:' + row.score + '%"></i></div><small>' + row.correct + '/' +
+      row.total + (row.score < 40 ? ' · 과락' : "") + '</small></div>').join("") +
+      '<p>이번에 틀린 문제 ' + wrong.length + '개</p><div class="actions">' +
       (wrong.length ? button("틀린 문제 다시 풀기", "retry") : "") + button("홈", "back") + '</div>' + review);
   }
 

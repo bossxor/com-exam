@@ -1,0 +1,51 @@
+name: Deploy CBT to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check public files and test
+        run: |
+          excluded=$(git ls-files | grep -E '^(pdf/|tools/src/|tmp/|dist/|web/data/(kcci|ref)-|web/data/img/(kcci|ref)-)' || true)
+          if [ -n "$excluded" ]; then
+            printf '%s\n' "$excluded"
+            exit 1
+          fi
+          node --test 'tests/*.test.js'
+          node tools/validate.mjs
+      - name: List public problem banks
+        id: banks
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readdirSync, writeFileSync } from "node:fs";
+          const banks = readdirSync("web/data").filter(name => /^ai-[\w-]+\.js$/.test(name)).sort();
+          writeFileSync("web/data/index.js", "window.BANK_FILES = " + JSON.stringify(banks) + ";\n");
+          appendFileSync(process.env.GITHUB_OUTPUT, "count=" + banks.length + "\n");
+          NODE
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.banks.outputs.count != '0'
+        with:
+          path: web
+      - uses: actions/deploy-pages@v4
+        if: steps.banks.outputs.count != '0'
+        id: pages

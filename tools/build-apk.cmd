@@ -6,7 +6,7 @@ if not exist "..\web\index.html" (
     popd
     exit /b 1
 )
-call gradlew.bat --project-cache-dir "%LOCALAPPDATA%\com1cbt-build\project-cache" assembleDebug
+call .\gradlew.bat --project-cache-dir "%LOCALAPPDATA%\com1cbt-build\project-cache" assembleDebug
 if errorlevel 1 (
     popd
     exit /b 1

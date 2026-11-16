@@ -129,7 +129,7 @@
         '"' + (i === cur.idx ? ' aria-current="step"' : ""))).join("") + '</div></details>' : "";
     const verdict = selected == null ? "정답 " + (q.answer + 1) + "번" :
       (selected === q.answer ? "정답" : "오답") + " · 정답 " + (q.answer + 1) + "번";
-    render("question", '<section class="card"><div class="qtop"><span class="pill">' + Core.SUBJECTS[q.subject] + '</span>' +
+    render("question", '<section class="card question-card"><div class="qtop"><span class="pill">' + Core.SUBJECTS[q.subject] + '</span>' +
       (exam ? '<time id="timer" aria-label="남은 시간">' + clock(cur.secondsLeft) + '</time>' :
         '<span class="mtag">' + modes[key][2] + '</span>') + '</div><div class="qhead"><span class="count">문제 ' +
       (cur.idx + 1) + ' / ' + cur.ids.length + '</span>' + button(star ? "★ 별표" : "☆ 별표", "star", 'aria-pressed="' + star + '"') +

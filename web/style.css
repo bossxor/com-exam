@@ -84,7 +84,7 @@ button:disabled { opacity: .45; cursor: default }
 .choice.wrong { border: 2px solid var(--red); background: var(--red-soft) }
 .choice.wrong .mark { border-color: var(--red); background: var(--red); color: #fff }
 .choice:disabled { opacity: 1 }
-.ctext { display: flex; flex-direction: column; align-items: flex-start }
+.ctext { min-width: 0; display: flex; flex-direction: column; align-items: flex-start }
 .choice small { display: inline-block; margin-top: .35rem; padding: .1rem .65rem; border-radius: 999px; background: var(--muted); color: #fff; font: 800 .75rem var(--sans) }
 .choice.correct small { background: var(--green) }
 .choice.wrong small { background: var(--red) }
@@ -145,3 +145,16 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
 .visual .ref-margin-bottom-12 { margin-bottom: 12% }
 .visual .ref-margin-bottom-18 { margin-bottom: 18% }
 .visual .ref-margin-bottom-44 { margin-bottom: 44% }
+
+/* Keep Korean words intact where possible and let long formulas wrap. */
+.hero p, .rt, .question, .choice, .explanation, details > summary {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  main { padding-inline: .625rem }
+  .question-card { padding-inline: .75rem }
+  .choice { gap: .5rem; padding-inline: .65rem }
+  .explanation { padding-inline: .625rem }
+  .dock { margin-inline: -.625rem; padding-inline: .625rem }
+}

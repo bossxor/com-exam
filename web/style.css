@@ -1,0 +1,93 @@
+:root {
+  color-scheme: light dark;
+  --paper: #FAFAF7;
+  --ink: #1C1F26;
+  --omr: #C9788A;
+  --pen: #D3263A;
+  --muted: #6B6F78;
+  --note: #FBE3E7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #16181D;
+    --ink: #E7E5E0;
+    --omr: #A86A78;
+    --pen: #FF5D6C;
+    --muted: #9A9DA5;
+    --note: #3A2328;
+  }
+}
+* { box-sizing: border-box }
+body { margin: 0; background: var(--paper); color: var(--ink); font: .9375rem/1.5 system-ui, sans-serif }
+main { max-width: 680px; margin: auto; padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom)) }
+h1 { font-size: 1.65rem; margin: .5rem 0 1rem; overflow-wrap: anywhere }
+h2 { font-size: 1.15rem }
+button, input, select { font: inherit; accent-color: var(--pen) }
+button { min-height: 44px; padding: .55rem .8rem; border: 1px solid var(--muted); border-radius: .3rem; background: var(--paper); color: var(--ink); cursor: pointer }
+button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+button:disabled { opacity: .62; cursor: default }
+:focus-visible { outline: 2px solid var(--pen); outline-offset: 3px }
+fieldset { margin: 0 0 1rem; padding: .5rem .7rem; border: 1px solid var(--omr); min-width: 0 }
+legend { font-weight: 700 }
+label { display: inline-flex; align-items: center; min-height: 44px; margin-right: .75rem; gap: .35rem }
+input[type=number] { width: 5rem }
+.bank-group { margin: .5rem 0 }
+.bank-group summary { cursor: pointer; min-height: 44px; padding: .6rem 0 }
+.actions, .meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap }
+.meta { color: var(--muted); justify-content: space-between }
+.marks { display: flex; height: .45rem; gap: .3rem; margin-bottom: .75rem }
+.marks span { flex: 1; border: 1px solid var(--omr) }
+.marks .filled { background: var(--omr) }
+.badge { background: var(--note); padding: .25rem .5rem }
+.question, .choice, .explanation { font: 1.0625rem/1.75 Georgia, serif; white-space: pre-wrap; overflow-wrap: anywhere }
+.choice { display: flex; align-items: center; gap: .8rem; width: 100%; min-height: 56px; text-align: left; margin: .5rem 0; border-color: transparent; border-bottom-color: var(--omr) }
+.choice[aria-pressed=true] { background: var(--note) }
+.choice:disabled { opacity: 1 }
+.mark { position: relative; display: grid; place-items: center; flex: 0 0 28px; height: 28px; border: 1px solid var(--omr); border-radius: 50%; font: .9rem system-ui }
+.choice[aria-pressed=true] .mark, .grid .answered { background: var(--ink); color: var(--paper) }
+.choice.wrong .mark::after { content: ""; position: absolute; height: 2px; width: 35px; transform: rotate(-44deg); background: var(--pen) }
+.mark svg { position: absolute; inset: -5px; width: 36px; height: 36px; overflow: visible; fill: none; stroke: var(--pen); stroke-width: 2; stroke-dasharray: 110; animation: circle .3s ease-out }
+@keyframes circle { from { stroke-dashoffset: 110 } }
+@media (prefers-reduced-motion: reduce) { .mark svg { animation: none } }
+.choice small { font: .8rem system-ui; color: var(--pen) }
+.explanation { padding: .5rem .75rem; border-left: 3px solid var(--pen) }
+.dock { position: fixed; inset: auto 0 0; z-index: 1; background: var(--paper); padding: .55rem 1rem calc(.55rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--omr) }
+.dock .actions { max-width: 648px; margin: auto }
+.dock button { flex: 1 }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: .35rem }
+.score { font: 3rem Georgia, serif; margin: .5rem 0 }
+.pen, #storage-status { color: var(--pen) }
+#storage-status { max-width: 680px; margin: auto; padding: .5rem 1rem; background: var(--note) }
+table { border-collapse: collapse }
+th, td { border: 1px solid var(--omr); padding: .3rem .45rem; text-align: left }
+.sheet-wrap, .visual { overflow: auto }
+.visual img { max-width: 100%; height: auto }
+.visual .target { outline: 2px solid var(--pen); outline-offset: -2px }
+.visual .col-head, .visual .row-head, .visual .corner, .visual .formula-bar { background: var(--note) }
+.visual .figure-note { color: var(--muted) }
+.stats { width: 100% }
+.stats button { text-align: left }
+.visual .ref-chart-image { width: 100%; background: white }
+.visual .chart-grid { display: flex; align-items: end; gap: 1rem; height: 10rem; border-bottom: 1px solid var(--muted) }
+.visual .chart-cluster { display: flex; align-items: end; justify-content: center; gap: .3rem; position: relative; height: 100%; flex: 1 }
+.visual .bar { width: 24%; background: var(--omr) }
+.visual .bar.alt, .visual .line-dot { background: var(--ink) }
+.visual .line-dot { position: absolute; width: .6rem; height: .6rem; border-radius: 50% }
+.visual .chart-labels { display: flex; justify-content: space-around }
+.visual .entity, .visual .office-window, .visual .report-box, .visual .property-sheet { border: 1px solid var(--omr); padding: .5rem }
+.visual .office-title, .visual .report-title, .visual .property-title { background: var(--note); font-weight: 700 }
+.visual .ref-height-26 { height: 26% }
+.visual .ref-height-32 { height: 32% }
+.visual .ref-height-38 { height: 38% }
+.visual .ref-height-44 { height: 44% }
+.visual .ref-height-55 { height: 55% }
+.visual .ref-height-64 { height: 64% }
+.visual .ref-height-70 { height: 70% }
+.visual .ref-height-82 { height: 82% }
+.visual .ref-height-88 { height: 88% }
+.visual .ref-bottom-62 { bottom: 62% }
+.visual .ref-bottom-74 { bottom: 74% }
+.visual .ref-bottom-82 { bottom: 82% }
+.visual .ref-margin-bottom-12 { margin-bottom: 12% }
+.visual .ref-margin-bottom-18 { margin-bottom: 18% }
+.visual .ref-margin-bottom-44 { margin-bottom: 44% }

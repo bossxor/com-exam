@@ -50,7 +50,7 @@
   function home() {
     clearInterval(timer);
     const cur = current();
-    const rows = [["all", "전체 섞어서", "과목별 20문항 · 60문항"]].concat(
+    const rows = [["all", "전체 섞어서", pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항"]].concat(
       banks.map(bank => [bank.id, bank.title, bank.questions.length + "문항"]));
     render("home",
       (cur ? '<section class="resume"><div><strong>풀던 세트가 있어요</strong><span>' + escape(modes[modeKey(cur)][0]) +
@@ -220,7 +220,7 @@
       case "mode": {
         const id = root.querySelector('input[name="round"]:checked').value;
         start(target.dataset.mode, Core.selectQuestions(pool, id === "all" ?
-          { bankIds: banks.map(bank => bank.id), subjects: [0, 1, 2], filter: "all", count: 60, order: "random" } :
+          { bankIds: banks.map(bank => bank.id), subjects: [0, 1, 2], filter: "all", count: 60, order: "random", aiLimit: 4 } :
           { bankIds: [id], subjects: [0, 1, 2], filter: "all", count: "all", order: "original" }, record));
         break;
       }

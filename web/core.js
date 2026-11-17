@@ -87,6 +87,16 @@ const Core = (() => {
       }
       if (opts.count === "all") return questions;
       const quota = Math.floor(opts.count / subjects.length) + Number(index < opts.count % subjects.length);
+      if (opts.aiLimit != null) {
+        const standard = questions.filter(q => q.source !== "ai");
+        const ai = questions.filter(q => q.source === "ai");
+        const standardCount = Math.min(standard.length, Math.max(quota - opts.aiLimit, quota - ai.length));
+        const selected = new Set([
+          ...standard.slice(0, standardCount),
+          ...ai.slice(0, quota - standardCount)
+        ]);
+        return questions.filter(q => selected.has(q));
+      }
       return questions.slice(0, quota);
     });
   }

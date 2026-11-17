@@ -97,3 +97,32 @@ test("session history retains 50 most recent", () => {
   assert.equal(record.sessions[0], 50);
   assert.equal(record.sessions.at(-1), 1);
 });
+
+test("mixed practice limits AI to four per subject with standard questions available", () => {
+  const mixed = ["ref", "kcci", "ai"].flatMap(source => pool.map(q => ({
+    ...q, source, id: source + q.id, bankId: source
+  })));
+  const opts = { ...options, bankIds: ["ref", "kcci", "ai"], order: "random", aiLimit: 4 };
+  const result = core.selectQuestions(mixed, opts, core.emptyRecord(), () => 0.37);
+  for (const subject of [0, 1, 2]) {
+    const questions = result.filter(q => q.subject === subject);
+    assert.equal(questions.length, 20);
+    assert.equal(questions.filter(q => q.source === "ai").length, 4);
+  }
+  assert.equal(new Set(result.map(q => q.id)).size, 60);
+  assert.equal(core.selectQuestions(mixed, { ...opts, count: "all" }, core.emptyRecord()).length, 225);
+});
+
+test("mixed practice fills shortages without duplicates", () => {
+  const mixed = [
+    ...pool.map(q => ({ ...q, source: "ai" })),
+    ...pool.slice(0, 3).map(q => ({ ...q, source: "ref", id: "ref-" + q.id }))
+  ];
+  const opts = { ...options, aiLimit: 4 };
+  const result = core.selectQuestions(mixed, opts, core.emptyRecord());
+  assert.equal(result.length, 60);
+  assert.equal(result.filter(q => q.subject === 0 && q.source === "ref").length, 3);
+  assert.equal(new Set(result.map(q => q.id)).size, 60);
+  const standardOnly = pool.map(q => ({ ...q, source: "ref" }));
+  assert.equal(core.selectQuestions(standardOnly, opts, core.emptyRecord()).length, 60);
+});

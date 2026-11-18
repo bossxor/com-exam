@@ -10,9 +10,10 @@ android {
     defaultConfig {
         applicationId = "com.songwol.com1cbt"
         minSdk = 24
+        if (providers.gradleProperty("publicApk").isPresent) applicationIdSuffix = ".public"
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     compileOptions {

@@ -52,34 +52,58 @@ def plain(raw):
     return part.get_text().strip()
 
 
-for n, (_, _, subject, question, addition, answer, explanation, *choices) in enumerate(zip(*values), 1):
-    row = dict(n=n, subject=int(subject) - 1, topic=topics[n - 1], text=plain(question),
-               choices=list(map(plain, choices)), answer=int(answer) - 1, explanation=plain(explanation))
-    if not row["text"] or not row["explanation"] or not all(row["choices"]) or not 0 <= row["answer"] < 4:
-        raise ValueError(f"Invalid content in question {n}")
-    extra = fragment(addition)
-    pictures = extra.find_all("img")
+def split_visual(raw, key, label):
+    part = fragment(raw)
     rendered = []
-    for i, img in enumerate(pictures, 1):
+    for i, img in enumerate(part.find_all("img"), 1):
         data = img.get("src", "")
         if not data.startswith("data:image/png;base64,"):
-            raise ValueError(f"Unsupported image in question {n}")
+            raise ValueError(f"Unsupported image in {key}")
         payload = base64.b64decode(data.split(",", 1)[1], validate=True)
         with Image.open(BytesIO(payload)) as picture:
             if picture.format != "PNG":
-                raise ValueError(f"Invalid PNG in question {n}")
+                raise ValueError(f"Invalid PNG in {key}")
             picture.verify()
-        name = f"{bank_id}-{n}-{i}.png"
+        name = f"{bank_id}-{key}-{i}.png"
         images[name] = payload
-        rendered.append(f'<img src="img/{name}" alt="문항 {n} 그림 {i}">')
+        rendered.append(f'<img src="img/{name}" alt="{label} 그림 {i}">')
         img.decompose()
-    if extra.find(["table", "object", "iframe"]):
-        raise ValueError(f"Unsupported supplement in question {n}")
-    supplement = plain(str(extra))
-    if supplement:
-        rendered.insert(0, "<pre>" + escape(supplement) + "</pre>")
-    if rendered:
-        row["visual"] = "".join(rendered)
+    for table in part.find_all("table"):
+        if table.find_parent("table"):
+            continue
+        table.attrs = {}
+        for tag in table.find_all(True):
+            if tag.name not in {"table", "tr", "th", "td", "span", "b", "i", "br", "div", "pre", "code"}:
+                tag.unwrap()
+                continue
+            tag.attrs = {key: value for key, value in tag.attrs.items()
+                         if key in {"colspan", "rowspan"} and isinstance(value, str) and value.isdecimal()}
+        rendered.append(str(table))
+        table.decompose()
+    return plain(str(part)), "".join(rendered)
+
+
+for n, (_, _, subject, question, addition, answer, explanation, *choices) in enumerate(zip(*values), 1):
+    text, question_visual = split_visual(question, f"{n}-question", f"문항 {n}")
+    supplement, addition_visual = split_visual(addition, str(n), f"문항 {n}")
+    explanation, explanation_visual = split_visual(explanation, f"{n}-explanation", "해설")
+    row = dict(n=n, subject=int(subject) - 1, topic=topics[n - 1], text=text or "다음 그림을 보시오.",
+               choices=[], answer=int(answer) - 1, explanation=explanation or "그림 해설")
+    choice_visuals = []
+    for i, choice in enumerate(choices, 1):
+        choice_text, choice_visual = split_visual(choice, f"{n}-choice-{i}", f"보기 {i}")
+        row["choices"].append(choice_text or (f"보기 {i} 그림" if choice_visual else ""))
+        choice_visuals.append(choice_visual)
+    if (not text and not question_visual or not explanation and not explanation_visual
+            or not all(row["choices"]) or not 0 <= row["answer"] < 4):
+        raise ValueError(f"Invalid content in question {n}")
+    visual = question_visual + ("<pre>" + escape(supplement) + "</pre>" if supplement else "") + addition_visual
+    if visual:
+        row["visual"] = visual
+    if any(choice_visuals):
+        row["choiceVisuals"] = choice_visuals
+    if explanation_visual:
+        row["explanationVisual"] = explanation_visual
     bank["questions"].append(row)
 
 root = Path("web/data")

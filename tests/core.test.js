@@ -65,6 +65,20 @@ test("bank validation rejects malformed questions and unverified AI", () => {
   for (const patch of [{ choices: ["a", "b", "c"] }, { answer: 4 }, { topic: "unknown" }, { visual: "<script></script>" }, { visual: '<img src="x" onerror="alert(1)">' }]) {
     assert.ok(core.validateBank({ ...bank, questions: [{ ...bank.questions[0], ...patch }] }).length);
   }
+  const image = '<img src="img/example.png" alt="보기 그림">';
+  for (const patch of [
+    { choiceVisuals: [image, "", "", ""] },
+    { explanationVisual: image }
+  ]) {
+    assert.deepEqual(core.validateBank({ ...bank, questions: [{ ...bank.questions[0], ...patch }] }), []);
+  }
+  for (const patch of [
+    { choiceVisuals: [image] },
+    { choiceVisuals: ["<script></script>", "", "", ""] },
+    { explanationVisual: '<img src="https://example.com/p.png">' }
+  ]) {
+    assert.ok(core.validateBank({ ...bank, questions: [{ ...bank.questions[0], ...patch }] }).length);
+  }
   assert.ok(core.validateBank({ ...bank, verified: false }).length);
 });
 for (const mode of ["study", "exam"]) {

@@ -49,13 +49,13 @@ button:disabled { opacity: .45; cursor: default }
 .resume div { display: flex; flex-direction: column; min-width: 0 }
 .resume span { color: var(--muted); font-size: .875rem }
 .rows { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem }
-.row:first-child { grid-column: 1 / -1 }
+.card > .rows > .row:first-child { grid-column: 1 / -1 }
 .row { position: relative; display: block }
 .row input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer }
 .rbox { display: flex; align-items: center; gap: .4rem; height: 100%; min-height: 48px; padding: .4rem .75rem; border: 1.5px solid var(--line); border-radius: 14px; background: #fff }
 .rt { flex: 1; font-size: .9375rem; font-weight: 700; line-height: 1.3 }
 .rm { display: none; color: var(--muted); font-size: .8125rem; text-align: right }
-.row:first-child .rm { display: inline }
+.card > .rows > .row:first-child .rm { display: inline }
 .row input:checked + .rbox { border: 2px solid var(--blue); background: var(--blue-soft) }
 .row input:checked + .rbox::before { content: "\2713"; color: var(--blue); font-weight: 800 }
 .row input:focus-visible + .rbox { outline: 3px solid var(--blue); outline-offset: 2px }
@@ -158,3 +158,6 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
   .explanation { padding-inline: .625rem }
   .dock { margin-inline: -.625rem; padding-inline: .625rem }
 }
+
+.round-year { margin-top: .5rem; border-top: 1px solid var(--line) }
+.ctext > .visual { max-width: 100%; margin-top: .25rem }

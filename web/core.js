@@ -33,13 +33,17 @@ const Core = (() => {
       if (!Array.isArray(q.choices) || q.choices.length !== 4 || !Array.from(q.choices).every(hasText)) {
         fail("expected four nonempty choices");
       } else {
-        const key = JSON.stringify(q.choices.map(choice => choice.trim()).sort());
-        if (choiceSets.has(key)) fail("duplicate choice set");
-        choiceSets.add(key);
+        const key = JSON.stringify(q.choices.map((choice, i) => [choice.trim(), q.choiceVisuals?.[i] ?? ""]).sort());
+        const duplicateKey = bank.source === "ai" ? key : JSON.stringify([q.text, q.visual, key]);
+        if (choiceSets.has(duplicateKey)) fail("duplicate choice set");
+        choiceSets.add(duplicateKey);
       }
       if (![0, 1, 2, 3].includes(q.answer)) fail("invalid answer");
       if (!hasText(q.text) || !hasText(q.explanation)) fail("missing text or explanation");
-      if (q.visual != null && !validVisual(q.visual)) fail("unsafe visual markup");
+      if ((q.visual != null && !validVisual(q.visual))
+          || (q.explanationVisual != null && !validVisual(q.explanationVisual))
+          || (q.choiceVisuals != null && (!Array.isArray(q.choiceVisuals) || q.choiceVisuals.length !== 4
+            || !Array.from(q.choiceVisuals).every(validVisual)))) fail("unsafe visual markup");
     }
     return errors;
   }

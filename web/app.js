@@ -50,17 +50,32 @@
   function home() {
     clearInterval(timer);
     const cur = current();
-    const rows = [["all", "전체 섞어서", pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항"]].concat(
-      banks.map(bank => [bank.id, bank.title, bank.questions.length + "문항"]));
+    const roundRow = (id, title, meta, checked = false) =>
+      '<label class="row"><input type="radio" name="round" value="' + escape(id) + '"' + (checked ? " checked" : "") +
+      '><span class="rbox"><span class="rt">' + escape(title) + '</span><span class="rm">' + escape(meta) + '</span></span></label>';
+    const rows = [roundRow("all", "전체 섞어서",
+      pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항", true)];
+    const youngjin = new Map();
+    for (const bank of banks) {
+      const match = /^ref-youngjin-(\d{4})-(\d{2})$/.exec(bank.id);
+      if (!match) {
+        rows.push(roundRow(bank.id, bank.title, bank.questions.length + "문항"));
+        continue;
+      }
+      const [, year, round] = match;
+      if (!youngjin.has(year)) youngjin.set(year, []);
+      youngjin.get(year).push(roundRow(bank.id, year + "년 " + round + "회", bank.questions.length + "문항"));
+    }
+    const youngjinRows = [...youngjin].map(([year, rounds]) =>
+      '<details class="round-year"><summary>영진닷컴 ' + year + '년</summary><div class="rows">' +
+      rounds.join("") + '</div></details>').join("");
     render("home",
       (cur ? '<section class="resume"><div><strong>풀던 세트가 있어요</strong><span>' + escape(modes[modeKey(cur)][0]) +
         ' · ' + (cur.idx + 1) + '/' + cur.ids.length + '</span></div>' + button("이어서 풀기", "resume", 'class="primary"') + '</section>' : "") +
       '<section class="hero"><h1 tabindex="-1">60분, 60문항.<br>어떻게 풀까요?</h1><p>컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반</p><span class="big" aria-hidden="true">60</span></section>' +
       (!pool.length ? '<p class="empty">문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p>' :
-        '<section class="card"><h2>1. 문제 고르기</h2><div class="rows">' + rows.map(([id, title, meta], i) =>
-          '<label class="row"><input type="radio" name="round" value="' + escape(id) + '"' + (i === 0 ? " checked" : "") +
-          '><span class="rbox"><span class="rt">' + escape(title) + '</span><span class="rm">' + escape(meta) + '</span></span></label>').join("") +
-        '</div></section><section class="card"><h2>2. 풀이 방식</h2>' + Object.entries(modes).map(([key, [title, desc]]) =>
+        '<section class="card"><h2>1. 문제 고르기</h2><div class="rows">' + rows.join("") +
+        '</div>' + youngjinRows + '</section><section class="card"><h2>2. 풀이 방식</h2>' + Object.entries(modes).map(([key, [title, desc]]) =>
           button('<strong>' + title + '</strong><span>' + desc + '</span>', "mode", 'class="mode" data-mode="' + key + '"')).join("") + '</section>'));
   }
 
@@ -112,7 +127,7 @@
       const wrong = reviewed && selected === i && !correct;
       const tags = [correct ? "정답" : "", wrong ? "내 답" : "",
         reviewed && prior?.lastChoice === i && selected !== i ? "지난번 내 답" : ""].filter(Boolean).join(" · ");
-      return button('<span class="mark">' + (i + 1) + '</span><span class="ctext">' + escape(choice) +
+      return button('<span class="mark">' + (i + 1) + '</span><span class="ctext">' + escape(choice) + visual({ visual: q.choiceVisuals?.[i] }) +
         (tags ? '<small>' + tags + '</small>' : "") + '</span>', "choice",
         'class="choice' + (wrong ? " wrong" : "") + (correct ? " correct" : "") + '" data-index="' + i +
         '" aria-pressed="' + (selected === i) + '"' + (answered ? " disabled" : ""));
@@ -137,7 +152,7 @@
       (!exam && prior?.wrong ? '<span class="badge">이전 오답 ' + prior.wrong + '회</span>' : "") +
       '<h1 class="question" tabindex="-1">' + escape(q.text) + '</h1>' + visual(q) + choices +
       '<div id="feedback" aria-live="polite">' + (reviewed ? '<section class="explanation"><p class="verdict ' +
-        (selected == null ? "" : selected === q.answer ? "ok" : "no") + '">' + verdict + '</p>' + escape(q.explanation) +
+        (selected == null ? "" : selected === q.answer ? "ok" : "no") + '">' + verdict + '</p>' + escape(q.explanation) + visual({ visual: q.explanationVisual }) +
         '</section>' : "") + '</div>' + grid + '</section><div class="dock"><div class="actions">' + controls + '</div></div>');
     if (enter) {
       root.scrollTo(0, 0);
@@ -187,9 +202,9 @@
         const answer = cur.answers[i];
         if (wrongOnly && q.answer === answer) return "";
         return '<details><summary>' + (i + 1) + '. ' + escape(q.text) + '</summary>' + visual(q) +
-          '<ol>' + q.choices.map(choice => '<li>' + escape(choice) + '</li>').join("") + '</ol><p>내 답 ' +
+          '<ol>' + q.choices.map((choice, i) => '<li>' + escape(choice) + visual({ visual: q.choiceVisuals?.[i] }) + '</li>').join("") + '</ol><p>내 답 ' +
           (answer == null ? "미응답" : answer + 1 + "번") + ' · 정답 ' + (q.answer + 1) +
-          '번</p><p class="explanation">' + escape(q.explanation) + '</p></details>';
+          '번</p><div class="explanation">' + escape(q.explanation) + visual({ visual: q.explanationVisual }) + '</div></details>';
       }).join("") + '</section>' : "";
     render("result", '<section class="scorecard"><h1 tabindex="-1">채점 결과</h1><p class="label">총점 평균</p><p class="score">' +
       average + '<small>점</small></p>' + (passed == null ? "" : '<p class="verdict-pill ' + (passed ? "pass" : "fail") + '">' +

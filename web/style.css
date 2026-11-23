@@ -1,111 +1,108 @@
 :root {
   color-scheme: light;
-  --navy: #10233F;
-  --blue: #2457C5;
-  --blue-ink: #1B449A;
-  --blue-soft: #E8EFFD;
-  --paper: #FAFAF8;
-  --ink: #0F1B2D;
-  --muted: #46556B;
-  --line: #8A99B0;
-  --green: #15803D;
-  --green-soft: #E6F5EC;
-  --red: #C62828;
-  --red-soft: #FDECEC;
-  --hint: #FFF8E1;
+  --masthead: #26392F;
+  --paper: #F7F7F2;
+  --ink: #202923;
+  --muted: #526058;
+  --line: #BEC8C0;
+  --brand: #20513E;
+  --brand-soft: #E8EFE7;
+  --green: #215C40;
+  --red: #982B28;
+  --hint: #F5F1DE;
   --omr: var(--line);
   --note: var(--hint);
   --pen: var(--red);
-  --brand-soft: var(--blue-soft);
   --sans: "Pretendard", "Noto Sans KR", "Noto Sans CJK KR", "Malgun Gothic", system-ui, sans-serif;
 }
 * { box-sizing: border-box }
 html, body { height: 100% }
 body { margin: 0; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font: 1rem/1.55 var(--sans); -webkit-text-size-adjust: 100% }
-.appbar { flex: none; display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 1rem; background: var(--navy); color: #fff }
-.brand { display: flex; align-items: center; gap: .6rem; font-weight: 800; letter-spacing: -.02em }
-.appbar button { min-height: 40px; padding: 0 1rem; border: 1px solid #8A99B0; border-radius: 6px; background: transparent; color: #fff; font-weight: 700 }
-#storage-status { flex: none; margin: 0; padding: .5rem 1rem; background: var(--red-soft); color: var(--red); font-weight: 700 }
-main { flex: 1; min-height: 0; width: 100%; max-width: 680px; margin: 0 auto; padding: 1rem 1rem 0; overflow-y: auto; -webkit-overflow-scrolling: touch }
-h1, h2 { margin: 0 }
+[hidden] { display: none !important }
+.appbar { flex: none; display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 4px 1rem; background: var(--masthead); color: white }
+.brand { font-weight: 800 }
+.appbar button { min-width: 48px; color: white; border-color: #8C9AAF; background: transparent }
+.appbar button:focus-visible { outline-color: white }
+#storage-status { flex: none; margin: 0; padding: .5rem 1rem; background: #F6E9E5; color: var(--red) }
+main { flex: 1; min-height: 0; width: 100%; max-width: 760px; margin-inline: auto; padding: 1.25rem 1rem 0; overflow-y: auto }
+h1, h2, p { margin: 0 }
+h1 { line-height: 1.3; font-weight: 800 }
 h1:focus { outline: none }
-button, input { font: inherit }
-button { min-height: 48px; padding: 0 1.1rem; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); font: 700 1rem var(--sans); cursor: pointer }
-button.primary { background: var(--blue); border-color: var(--blue); color: #fff }
-button:active { background: var(--blue-soft) }
-button.primary:active { background: var(--blue-ink) }
-button:disabled { opacity: .45; cursor: default }
-:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px }
-.card { margin-bottom: 1.25rem; padding: .25rem 1.1rem 1.25rem; border-bottom: 1px solid #C9D2E0 }
-.home-title, .scorecard > h1 { margin-bottom: .8rem; font-size: 1.25rem; font-weight: 800 }
-.card > h2 { margin-bottom: .8rem; font-size: 1.0625rem; font-weight: 800 }
-.resume { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: .7rem 1rem; background: var(--blue-soft); border-left: 3px solid var(--blue) }
-.resume div { display: flex; flex-direction: column; min-width: 0 }
-.resume span { color: var(--muted); font-size: .875rem }
-.rows { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem }
-.card > .rows > .row:first-child { grid-column: 1 / -1 }
-.row { position: relative; display: block }
-.row input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer }
-.rbox { display: flex; align-items: center; gap: .4rem; height: 100%; min-height: 48px; padding: .4rem .75rem; border: 1px solid var(--line); border-radius: 6px; background: #fff }
-.rt { flex: 1; font-size: .9375rem; font-weight: 700; line-height: 1.3 }
-.rm { display: none; color: var(--muted); font-size: .8125rem; text-align: right }
-.card > .rows > .row:first-child .rm { display: inline }
-.row input:checked + .rbox { border: 2px solid var(--blue); background: var(--blue-soft) }
-.row input:checked + .rbox::before { content: "\2713"; color: var(--blue); font-weight: 800 }
-.row input:focus-visible + .rbox { outline: 3px solid var(--blue); outline-offset: 2px }
-.mode { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 60px; margin-top: .3rem; padding: .5rem .75rem; border: 1px solid var(--line); border-radius: 6px; text-align: left }
-.mode strong { font-size: 1.125rem; font-weight: 800 }
-.mode span { color: var(--muted); font-size: .875rem; font-weight: 500 }
-.empty { padding: 1rem; background: var(--hint); border-radius: 12px }
-.qtop, .qhead { display: flex; align-items: center; justify-content: space-between; gap: .6rem }
-.qhead { margin: .8rem 0 .5rem }
-.pill { padding: .25rem .8rem; border-radius: 999px; background: var(--blue-soft); color: var(--blue-ink); font-size: .875rem; font-weight: 800 }
-.mtag { color: var(--muted); font-size: .875rem; font-weight: 700 }
-.count { color: var(--muted); font-weight: 700 }
-#timer { font-size: 1.25rem; font-weight: 800; font-variant-numeric: tabular-nums }
-.qhead button { min-height: 44px; padding: 0 .9rem; font-size: .9375rem }
-.bar { height: 6px; border-radius: 3px; background: #DCE3EE; overflow: hidden }
-.bar i { display: block; height: 100%; border-radius: 3px; background: var(--blue) }
-.bar i.low { background: var(--red) }
-.badge { display: inline-block; margin: .6rem 0 0; padding: .2rem .7rem; border-radius: 999px; background: var(--hint); border: 1px solid #E5C766; font-size: .875rem; font-weight: 700 }
-.question { margin: .9rem 0 1rem; font: 700 1.1875rem/1.6 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
-.choice { display: flex; align-items: flex-start; gap: .8rem; width: 100%; min-height: 56px; margin: .6rem 0; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 6px; text-align: left; font: 500 1.0625rem/1.55 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
-.mark { display: grid; place-items: center; flex: 0 0 30px; height: 30px; margin-top: 1px; border: 1.5px solid var(--line); border-radius: 50%; background: #fff; font: 700 .9rem var(--sans) }
-.choice[aria-pressed=true] { border-color: var(--blue); background: var(--blue-soft) }
-.choice[aria-pressed=true] .mark { border-color: var(--blue); background: var(--blue); color: #fff }
-.choice.correct { border: 2px solid var(--green); background: var(--green-soft) }
-.choice.correct .mark { border-color: var(--green); background: var(--green); color: #fff }
-.choice.wrong { border: 2px solid var(--red); background: var(--red-soft) }
-.choice.wrong .mark { border-color: var(--red); background: var(--red); color: #fff }
+button, select, input { font: inherit }
+button { min-height: 44px; padding: .45rem .8rem; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--ink); font-weight: 600; cursor: pointer }
+button.primary { border-color: var(--brand); background: var(--brand); color: white }
+button:disabled { opacity: .5; cursor: default }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px }
+.setup { max-width: 520px; margin: .5rem auto 2rem }
+.setup h1 { font-size: 1.9rem; margin-bottom: 1.3rem }
+.resume { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem; margin-bottom: 1.4rem; background: var(--brand-soft); border-left: 3px solid var(--brand) }
+.resume div { min-width: 0; overflow-wrap: anywhere }
+.resume button { flex-shrink: 0 }
+.resume span, .mode small, .paper-source, .mtag { display: block; font-size: .875rem; color: var(--muted) }
+.field-label, .mode-list legend { display: block; font-weight: 800; margin-bottom: .5rem }
+#round { min-height: 48px; width: 100%; padding: .5rem .7rem; color: var(--ink); background: white; border: 1px solid #83938A; border-radius: 4px }
+.mode-list { min-width: 0; margin: 1.4rem 0 0; padding: 0; border: 0 }
+.mode { display: flex; align-items: flex-start; gap: .65rem; min-height: 58px; padding: .65rem 0; border-bottom: 1px solid var(--line); cursor: pointer }
+.mode strong { display: block; font-weight: 600 }
+.mode input { flex-shrink: 0; margin: .22rem 0 0; width: 18px; height: 18px; accent-color: var(--brand) }
+.start-line, .exam-line, .question-index, .score-line { display: flex; align-items: center; justify-content: space-between; gap: .65rem }
+.start-line { margin-top: 1rem; color: var(--muted) }
+.start-line .primary { min-width: 8rem }
+.exam-line { align-items: flex-start; padding-bottom: .45rem; border-bottom: 2px solid var(--ink) }
+.subject { font-size: 1.35rem; font-weight: 800 }
+.paper-source { overflow-wrap: anywhere }
+.mtag, #timer { flex-shrink: 0; margin-top: .25rem }
+#timer, .count, .score, .scores td { font-variant-numeric: tabular-nums }
+#timer { font-weight: 800; font-size: 1.125rem }
+.question-index { margin: .25rem 0 }
+.count { color: var(--muted); font-size: .95rem; font-weight: 600 }
+.question-index button { border: 0; font-size: .9rem }
+.bar { height: 3px; background: #DEE5DD }
+.bar i { display: block; height: 100%; background: var(--brand) }
+.badge { display: inline-block; margin-top: .7rem; padding: .2rem .45rem; background: var(--hint); font-size: .875rem }
+.question { margin: 1.1rem 0 1rem; font-size: 1.1875rem; line-height: 1.6; font-weight: 700 }
+.question, .choice, .explanation { white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere }
+.choice { display: flex; align-items: flex-start; gap: .7rem; width: 100%; min-height: 52px; padding: .65rem .5rem; border: 0; border-radius: 0; border-bottom: 1px solid var(--line); text-align: left; font: 500 1.0625rem/1.55 var(--sans) }
+.choice[data-index="0"] { border-top: 1px solid var(--line) }
+.mark { display: grid; place-items: center; flex: 0 0 26px; height: 26px; border: 1px solid #728177; border-radius: 50%; font-size: .875rem; font-weight: 600 }
+.choice[aria-pressed=true], .choice.correct { background: var(--brand-soft) }
+.choice[aria-pressed=true] .mark, .choice.correct .mark { color: white; border-color: var(--green); background: var(--green) }
+.choice.wrong { background: #F6E9E5 }
+.choice.wrong .mark { color: white; border-color: var(--red); background: var(--red) }
 .choice:disabled { opacity: 1 }
-.ctext { min-width: 0; display: flex; flex-direction: column; align-items: flex-start }
-.choice small { display: inline-block; margin-top: .35rem; padding: .1rem .65rem; border-radius: 999px; background: var(--muted); color: #fff; font: 800 .75rem var(--sans) }
-.choice.correct small { background: var(--green) }
-.choice.wrong small { background: var(--red) }
-#feedback { scroll-margin-bottom: 7rem }
-.explanation { margin: 1rem 0 0; padding: 1rem; border-left: 3px solid #A16D00; background: var(--hint); font: 400 1rem/1.7 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
-.verdict { margin: 0 0 .4rem; font-weight: 800 }
-.verdict.ok { color: var(--green) }
-.verdict.no { color: var(--red) }
-.dock { position: sticky; bottom: 0; z-index: 1; margin: 1rem -1rem 0; padding: .75rem 1rem; background: var(--paper); border-top: 1px solid #C9D2E0 }
-.actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap }
+.ctext { min-width: 0; flex: 1 }
+.ctext > .visual { max-width: 100%; margin-top: .25rem }
+.choice small { display: block; font-size: .8125rem; font-weight: 800; color: var(--muted) }
+.choice.correct small, .verdict.ok { color: var(--green) }
+.choice.wrong small, .verdict.no, .fail { color: var(--red) }
+#feedback { scroll-margin-bottom: 5rem }
+.explanation { margin-top: 1rem; padding: .75rem; border-left: 3px solid #8A7428; background: var(--hint); line-height: 1.7 }
+.verdict { margin: 0 0 .35rem; font-weight: 800 }
+.dock { position: sticky; bottom: 0; z-index: 1; margin: 1rem -1rem 0; padding: .55rem 1rem; background: var(--paper); border-top: 1px solid var(--line) }
+.actions { display: flex; gap: .5rem; flex-wrap: wrap }
 .dock .actions { flex-wrap: nowrap }
-.dock button { flex: 1 }
-details > summary { min-height: 44px; padding: .6rem 0; cursor: pointer; font-weight: 700 }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: .4rem }
-.grid button { min-height: 44px; padding: 0 }
-.grid .answered { border-color: var(--blue); background: var(--blue); color: #fff }
-.grid [aria-current] { outline: 3px solid var(--navy); outline-offset: 1px }
-.scorecard { margin: 0 0 1rem; padding: .25rem 1.1rem 1rem; border-bottom: 1px solid #C9D2E0 }
-.scorecard .label { margin: 0; color: var(--muted) }
-.score { margin: .2rem 0; font: 800 2.75rem/1.1 var(--sans); font-variant-numeric: tabular-nums }
-.score small { font-size: 1.25rem; font-weight: 700; color: var(--muted) }
-.verdict-pill { display: inline-block; margin: .4rem 0 0; padding: .3rem 1.2rem; border-radius: 999px; font-weight: 800 }
-.pass { background: var(--green); color: #fff }
-.fail { background: var(--red); color: #fff }
-.subj { margin: .9rem 0 }
-.srow { display: flex; justify-content: space-between; margin-bottom: .35rem; font-weight: 700 }
-.subj small { color: var(--muted) }
+.dock button { flex: 1; padding-inline: .35rem }
+details { border-bottom: 1px solid var(--line) }
+details > summary { min-height: 44px; padding: .65rem 0; cursor: pointer; font-weight: 600; word-break: keep-all; overflow-wrap: anywhere }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: .3rem; padding-bottom: .6rem }
+.grid button { padding: 0 }
+.grid .answered { background: var(--brand-soft) }
+.grid [aria-current] { border: 2px solid var(--brand) }
+.scorecard { border-bottom: 2px solid var(--ink); padding-bottom: .6rem; margin-bottom: .75rem }
+.scorecard h1 { font-size: 1.7rem; margin-bottom: 1rem }
+.scorecard .label { font-size: .875rem; color: var(--muted) }
+.score { font-size: 3rem; line-height: 1.1; font-weight: 800 }
+.score small { margin-left: .15rem; font-size: 1rem }
+.verdict-pill { align-self: flex-end; padding-bottom: .2rem; font-weight: 800 }
+.pass { color: var(--green) }
+.scores { width: 100%; margin: 0 0 1rem }
+.scores :is(th, td) { border: 0; border-bottom: 1px solid var(--line); padding: .55rem .25rem }
+.scores :is(th, td):not(:first-child) { text-align: right }
+.scores thead { color: var(--muted); font-size: .875rem }
+.scores small { display: block }
+.card { margin: 0 0 1.4rem }
+.card h2 { font-size: 1.15rem; margin-bottom: .65rem }
+.card > p { margin-bottom: .6rem }
 table { border-collapse: collapse }
 th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left }
 .sheet-wrap, .visual { overflow: auto }
@@ -113,8 +110,6 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
 .visual .target { outline: 2px solid var(--pen); outline-offset: -2px }
 .visual .col-head, .visual .row-head, .visual .corner, .visual .formula-bar { background: var(--brand-soft) }
 .visual .figure-note { color: var(--muted) }
-.stats { width: 100% }
-.stats button { text-align: left }
 .visual .ref-chart-image { width: 100%; background: white }
 .visual .chart-grid { display: flex; align-items: end; gap: 1rem; height: 10rem; border-bottom: 1px solid var(--muted) }
 .visual .chart-cluster { display: flex; align-items: end; justify-content: center; gap: .3rem; position: relative; height: 100%; flex: 1 }
@@ -139,20 +134,3 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
 .visual .ref-margin-bottom-12 { margin-bottom: 12% }
 .visual .ref-margin-bottom-18 { margin-bottom: 18% }
 .visual .ref-margin-bottom-44 { margin-bottom: 44% }
-
-/* Keep Korean words intact where possible and let long formulas wrap. */
-.rt, .question, .choice, .explanation, details > summary {
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-@media (max-width: 480px) {
-  main { padding-inline: .625rem }
-  .card, .scorecard { padding-inline: .75rem }
-  .choice { gap: .5rem; padding-inline: .65rem }
-  .explanation { padding-inline: .625rem }
-  .dock { margin-inline: -.625rem; padding-inline: .625rem }
-}
-
-.round-year { border-bottom: 1px solid #C9D2E0 }
-.round-year > .rows { padding-bottom: .65rem }
-.ctext > .visual { max-width: 100%; margin-top: .25rem }

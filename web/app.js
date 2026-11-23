@@ -14,7 +14,7 @@
   const record = Core.loadRecord(storage);
   let pool = [];
   let byId = new Map();
-  let page = "home";
+  let page = "";
   let timer;
   let prior;
   let result;
@@ -50,31 +50,36 @@
   function home() {
     clearInterval(timer);
     const cur = current();
-    const roundRow = (id, title, meta, checked = false) =>
-      '<label class="row"><input type="radio" name="round" value="' + escape(id) + '"' + (checked ? " checked" : "") +
-      '><span class="rbox"><span class="rt">' + escape(title) + '</span><span class="rm">' + escape(meta) + '</span></span></label>';
-    const mixed = roundRow("all", "전체 섞어서",
-      pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항", true);
     const groups = new Map();
     const sourceLabels = { kcci: "기출", "kcci-old": "구 기출", ref: "참고 문제", ai: "AI 문제" };
     for (const bank of banks) {
       const match = /^ref-youngjin-(\d{4})-(\d{2})$/.exec(bank.id);
       const group = match ? "영진닷컴 " + match[1] + "년" : sourceLabels[bank.source];
-      const title = match ? match[2] + "회" : bank.title;
+      const title = match ? match[1] + "년 " + match[2] + "회" : bank.title;
       if (!groups.has(group)) groups.set(group, []);
-      groups.get(group).push(roundRow(bank.id, title, bank.questions.length + "문항"));
+      groups.get(group).push('<option value="' + escape(bank.id) + '" data-count="' + bank.questions.length + '">' + escape(title) + '</option>');
     }
-    const groupedRounds = [...groups].map(([label, rounds]) =>
-      '<details class="round-year"><summary>' + escape(label) + '</summary><div class="rows">' +
-      rounds.join("") + '</div></details>').join("");
-    render("home",
-      (cur ? '<section class="resume"><div><strong>풀던 세트가 있어요</strong><span>' + escape(modes[modeKey(cur)][0]) +
-        ' · ' + (cur.idx + 1) + '/' + cur.ids.length + '</span></div>' + button("이어서 풀기", "resume", 'class="primary"') + '</section>' : "") +
-      '<section class="card"><h1 class="home-title" tabindex="-1">문제 고르기</h1>' +
-      (!pool.length ? '<p class="empty">문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p></section>' :
-        '<div class="rows">' + mixed + '</div>' + groupedRounds +
-        '</section><section class="card"><h2>풀이 방식</h2>' + Object.entries(modes).map(([key, [title, desc]]) =>
-          button('<strong>' + title + '</strong><span>' + desc + '</span>', "mode", 'class="mode" data-mode="' + key + '"')).join("") + '</section>'));
+    const options = [...groups].map(([label, rounds]) =>
+      '<optgroup label="' + escape(label) + '">' + rounds.join("") + '</optgroup>').join("");
+    const item = cur && question();
+    const resume = item ? '<section class="resume"><div><strong>' + escape(item.bankTitle) +
+      '</strong><span>' + escape(modes[modeKey(cur)][0]) + ' · ' + (cur.idx + 1) + ' / ' + cur.ids.length +
+      '문항</span></div>' + button("이어서 풀기", "resume") + '</section>' : "";
+    const mixedCount = [0, 1, 2].reduce((total, subject) =>
+      total + Math.min(20, pool.filter(q => q.subject === subject).length), 0);
+    const mix = pool.some(q => q.source !== "ai") ? "전체 섞어서 (기출·참고 중심)" : "전체 AI 문제 섞어서";
+    render("home", '<section class="setup"><h1 tabindex="-1">연습 시작</h1>' + resume +
+      (!pool.length ? '<p>문제 데이터를 찾을 수 없습니다.</p>' :
+        '<form id="setup-form"><label class="field-label" for="round">문제집</label>' +
+        '<select id="round" name="round"><option value="all" data-count="' + mixedCount + '">' + mix + '</option>' + options + '</select>' +
+        '<fieldset class="mode-list"><legend>풀이 방식</legend>' +
+        Object.entries(modes).map(([key, [title, desc]]) =>
+          '<label class="mode"><input type="radio" name="mode" value="' + key + '"' +
+          (key === "study" ? " checked" : "") + '><span><strong>' + escape(title) + '</strong><small>' +
+          escape(desc) + '</small></span></label>').join("") + '</fieldset><div class="start-line">' +
+        '<span id="round-count" aria-live="polite">' +
+        mixedCount +
+        '문항</span><button class="primary" type="submit">풀이 시작</button></div></form>') + '</section>');
   }
 
   function start(key, questions) {
@@ -142,9 +147,10 @@
         '"' + (i === cur.idx ? ' aria-current="step"' : ""))).join("") + '</div></details>' : "";
     const verdict = selected == null ? "정답 " + (q.answer + 1) + "번" :
       (selected === q.answer ? "정답" : "오답") + " · 정답 " + (q.answer + 1) + "번";
-    render("question", '<section class="card question-card"><div class="qtop"><span class="pill">' + Core.SUBJECTS[q.subject] + '</span>' +
+    render("question", '<section class="question-card"><div class="exam-line"><div><p class="subject">' +
+      Core.SUBJECTS[q.subject] + '</p><p class="paper-source">' + escape(q.bankTitle) + '</p></div>' +
       (exam ? '<time id="timer" aria-label="남은 시간">' + clock(cur.secondsLeft) + '</time>' :
-        '<span class="mtag">' + modes[key][2] + '</span>') + '</div><div class="qhead"><span class="count">문제 ' +
+        '<span class="mtag">' + modes[key][2] + '</span>') + '</div><div class="question-index"><span class="count">문제 ' +
       (cur.idx + 1) + ' / ' + cur.ids.length + '</span>' + button(star ? "★ 별표" : "☆ 별표", "star", 'aria-pressed="' + star + '"') +
       '</div><div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
       (!exam && prior?.wrong ? '<span class="badge">이전 오답 ' + prior.wrong + '회</span>' : "") +
@@ -204,12 +210,14 @@
           (answer == null ? "미응답" : answer + 1 + "번") + ' · 정답 ' + (q.answer + 1) +
           '번</p><div class="explanation">' + escape(q.explanation) + visual({ visual: q.explanationVisual }) + '</div></details>';
       }).join("") + '</section>' : "";
-    render("result", '<section class="scorecard"><h1 tabindex="-1">채점 결과</h1><p class="label">총점 평균</p><p class="score">' +
-      average + '<small>점</small></p>' + (passed == null ? "" : '<p class="verdict-pill ' + (passed ? "pass" : "fail") + '">' +
-      (passed ? "합격" : "불합격") + '</p>') + '</section><section class="card">' + perSubject.map(row => '<div class="subj"><div class="srow"><span>' +
-      Core.SUBJECTS[row.subject] + '</span><b>' + row.score + '점</b></div><div class="bar" aria-hidden="true"><i' +
-      (row.score < 40 ? ' class="low"' : "") + ' style="width:' + row.score + '%"></i></div><small>' + row.correct + '/' +
-      row.total + (row.score < 40 ? ' · 과락' : "") + '</small></div>').join("") +
+    render("result", '<section class="scorecard"><h1 tabindex="-1">채점 결과</h1><div class="score-line"><div>' +
+      '<p class="label">총점 평균</p><p class="score">' + average + '<small>점</small></p></div>' +
+      (passed == null ? "" : '<p class="verdict-pill ' + (passed ? "pass" : "fail") + '">' +
+      (passed ? "합격" : "불합격") + '</p>') + '</div></section><section class="card">' +
+      '<table class="scores"><thead><tr><th scope="col">과목</th><th scope="col">정답</th><th scope="col">점수</th></tr></thead><tbody>' +
+      perSubject.map(row => '<tr><th scope="row">' + Core.SUBJECTS[row.subject] + '</th><td>' +
+        row.correct + '/' + row.total + '</td><td><strong>' + row.score + '점</strong>' +
+        (row.score < 40 ? '<small class="fail">과락</small>' : '') + '</td></tr>').join("") + '</tbody></table>' +
       '<p>이번에 틀린 문제 ' + wrong.length + '개</p><div class="actions">' +
       (wrong.length ? button("틀린 문제 다시 풀기", "retry", 'class="primary"') : "") + button("홈", "back") + '</div></section>' + review);
   }
@@ -230,13 +238,6 @@
     switch (target.dataset.action) {
       case "back": window.appBack(); break;
       case "resume": resume(); break;
-      case "mode": {
-        const id = root.querySelector('input[name="round"]:checked').value;
-        start(target.dataset.mode, Core.selectQuestions(pool, id === "all" ?
-          { bankIds: banks.map(bank => bank.id), subjects: [0, 1, 2], filter: "all", count: 60, order: "random", aiLimit: 4 } :
-          { bankIds: [id], subjects: [0, 1, 2], filter: "all", count: "all", order: "original" }, record));
-        break;
-      }
       case "choice": choose(i); break;
       case "prev": move(current().idx - 1); break;
       case "jump": move(i); break;
@@ -257,7 +258,19 @@
       case "retry": start(result.cur.guide ? "guide" : result.cur.mode, result.wrong); break;
     }
   });
+  root.addEventListener("submit", event => {
+    if (event.target.id !== "setup-form") return;
+    event.preventDefault();
+    const data = new FormData(event.target);
+    const id = data.get("round");
+    start(data.get("mode"), Core.selectQuestions(pool, id === "all" ?
+      { bankIds: banks.map(bank => bank.id), subjects: [0, 1, 2], filter: "all", count: 60, order: "random", aiLimit: 4 } :
+      { bankIds: [id], subjects: [0, 1, 2], filter: "all", count: "all", order: "original" }, record));
+  });
   root.addEventListener("change", event => {
+    if (event.target.id === "round") {
+      root.querySelector("#round-count").textContent = event.target.selectedOptions[0].dataset.count + "문항";
+    }
     if (event.target.id === "wrong-only") {
       showResult(event.target.checked);
       root.querySelector("#wrong-only").focus();

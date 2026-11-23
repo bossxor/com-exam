@@ -2,6 +2,13 @@
   const root = document.querySelector("#app");
   const storageStatus = document.querySelector("#storage-status");
   const homeButton = document.querySelector("#home");
+  const viewer = document.querySelector("#figure-viewer");
+  const figureStage = viewer.querySelector(".figure-stage");
+  const figureContent = viewer.querySelector(".figure-content");
+  const figureScale = document.querySelector("#figure-scale");
+  const smaller = document.querySelector("#figure-smaller");
+  const larger = document.querySelector("#figure-larger");
+  let zoom = 100;
   const banks = window.BANKS = [];
   const modes = {
     exam: ["실전처럼 풀기", "60분 · 다 풀고 나서 채점과 문항별 해설", "실전 모드"],
@@ -68,7 +75,7 @@
     const mixedCount = [0, 1, 2].reduce((total, subject) =>
       total + Math.min(20, pool.filter(q => q.subject === subject).length), 0);
     const mix = pool.some(q => q.source !== "ai") ? "전체 섞어서 (기출·참고 중심)" : "전체 AI 문제 섞어서";
-    render("home", '<section class="setup"><h1 tabindex="-1">연습 시작</h1>' + resume +
+    render("home", '<section class="setup"><h1 tabindex="-1">연습 시작</h1><span class="setup-illustration" aria-hidden="true"><i></i><i></i><i></i></span>' + resume +
       (!pool.length ? '<p>문제 데이터를 찾을 수 없습니다.</p>' :
         '<form id="setup-form"><label class="field-label" for="round">문제집</label>' +
         '<select id="round" name="round"><option value="all" data-count="' + mixedCount + '">' + mix + '</option>' + options + '</select>' +
@@ -110,9 +117,45 @@
   function visual(q) {
     const image = typeof q.image === "string" && /^img\/[\w.-]+$/i.test(q.image) ?
       '<img src="data/' + escape(q.image) + '" alt="문항 ' + q.n + ' 그림">' : "";
-    const html = (q.visual ?? "").replace(/(<img\s+[^>]*?\bsrc\s*=\s*["'])(img\/)/gi, "$1data/$2");
+    const html = (q.visual ?? "").replace(/<pre>[\s\u200B]*<\/pre>/g, "").replace(/(<img\s+[^>]*?\bsrc\s*=\s*["'])(img\/)/gi, "$1data/$2");
     return image || html ? '<div class="visual">' + html + image + '</div>' : "";
   }
+
+  function zoomButton(q, reviewed) {
+    const markup = [q.visual, ...(q.choiceVisuals ?? []), reviewed && q.explanationVisual];
+    return (q.image || markup.some(value => /<(?:img|table)\b/i.test(value ?? ""))) ? button("표·그림 확대", "zoom", 'class="zoom-button"') : "";
+  }
+
+  function setZoom(value) {
+    zoom = value;
+    figureContent.style.setProperty("--figure-zoom", zoom / 100);
+    figureScale.textContent = zoom + "%";
+    smaller.disabled = zoom <= 100;
+    larger.disabled = zoom >= 400;
+  }
+
+  function openFigures(scope, selected) {
+    const figures = selected ? [selected] :
+      [...scope.querySelectorAll(".visual")].filter(item => item.querySelector("img,table"));
+    if (!figures.length || viewer.open) return;
+    figureContent.replaceChildren(...figures.map(figure => {
+      const copy = figure.cloneNode(true);
+      if (figure.closest(".choice")) {
+        const choice = Number(figure.closest(".choice").dataset.index) + 1;
+        const label = document.createElement("p");
+        label.textContent = "보기 " + choice;
+        copy.prepend(label);
+      }
+      return copy;
+    }));
+    setZoom(100);
+    viewer.showModal();
+    figureContent.style.width = figureStage.clientWidth + "px";
+    figureStage.scrollTo(0, 0);
+  }
+
+  smaller.addEventListener("click", () => setZoom(Math.max(100, zoom - 50)));
+  larger.addEventListener("click", () => setZoom(Math.min(400, zoom + 50)));
 
   function showQuestion(enter = false) {
     const cur = current();
@@ -154,7 +197,7 @@
       (cur.idx + 1) + ' / ' + cur.ids.length + '</span>' + button(star ? "★ 별표" : "☆ 별표", "star", 'aria-pressed="' + star + '"') +
       '</div><div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
       (!exam && prior?.wrong ? '<span class="badge">이전 오답 ' + prior.wrong + '회</span>' : "") +
-      '<h1 class="question" tabindex="-1">' + escape(q.text) + '</h1>' + visual(q) + choices +
+      '<h1 class="question" tabindex="-1">' + escape(q.text) + '</h1>' + visual(q) + zoomButton(q, reviewed) + choices +
       '<div id="feedback" aria-live="polite">' + (reviewed ? '<section class="explanation"><p class="verdict ' +
         (selected == null ? "" : selected === q.answer ? "ok" : "no") + '">' + verdict + '</p>' + escape(q.explanation) + visual({ visual: q.explanationVisual }) +
         '</section>' : "") + '</div>' + grid + '</section><div class="dock"><div class="actions">' + controls + '</div></div>');
@@ -205,7 +248,7 @@
       (wrongOnly ? " checked" : "") + '> 틀린 것만 보기</label>' + questions.map((q, i) => {
         const answer = cur.answers[i];
         if (wrongOnly && q.answer === answer) return "";
-        return '<details><summary>' + (i + 1) + '. ' + escape(q.text) + '</summary>' + visual(q) +
+        return '<details><summary>' + (i + 1) + '. ' + escape(q.text) + '</summary>' + visual(q) + zoomButton(q, true) +
           '<ol>' + q.choices.map((choice, i) => '<li>' + escape(choice) + visual({ visual: q.choiceVisuals?.[i] }) + '</li>').join("") + '</ol><p>내 답 ' +
           (answer == null ? "미응답" : answer + 1 + "번") + ' · 정답 ' + (q.answer + 1) +
           '번</p><div class="explanation">' + escape(q.explanation) + visual({ visual: q.explanationVisual }) + '</div></details>';
@@ -223,6 +266,7 @@
   }
 
   window.appBack = () => {
+    if (viewer.open) { viewer.close(); return true; }
     if (page === "home") return false;
     if (page === "question" && !confirm("그만 풀까요? 홈에서 이어서 풀 수 있습니다.")) return true;
     if (page === "question") save();
@@ -232,11 +276,17 @@
 
   homeButton.addEventListener("click", () => window.appBack());
   root.addEventListener("click", event => {
+    const image = event.target.closest(".visual img");
+    if (image) {
+      openFigures(root, image.closest(".visual"));
+      return;
+    }
     const target = event.target.closest("[data-action]");
     if (!target) return;
     const i = Number(target.dataset.index);
     switch (target.dataset.action) {
       case "back": window.appBack(); break;
+      case "zoom": openFigures(target.closest("details") ?? target.closest(".question-card") ?? root); break;
       case "resume": resume(); break;
       case "choice": choose(i); break;
       case "prev": move(current().idx - 1); break;
@@ -277,7 +327,7 @@
     }
   });
   document.addEventListener("keydown", event => {
-    if (page !== "question" || event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
+    if (viewer.open || page !== "question" || event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (/^[1-4]$/.test(event.key)) {
       event.preventDefault();
       root.querySelector('[data-action="choice"][data-index="' + (Number(event.key) - 1) + '"]')?.click();

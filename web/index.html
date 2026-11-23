@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#26392F">
+<meta name="theme-color" content="#292D3B">
 <title>컴활 1급 필기 CBT</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
@@ -13,10 +13,22 @@
 </head>
 <body>
 <header class="appbar">
-  <span class="brand">컴활 1급 필기 CBT</span>
+  <span class="brand"><span class="paper-icon" aria-hidden="true"></span>컴활 1급 필기 CBT</span>
   <button type="button" id="home" hidden>홈</button>
 </header>
 <p id="storage-status" role="status" hidden>기록 저장 실패</p>
 <main id="app"><p>문제집을 불러오는 중입니다.</p></main>
+<dialog id="figure-viewer" aria-labelledby="figure-title">
+  <div class="viewer-toolbar">
+    <h2 id="figure-title">표·그림 확대</h2>
+    <div class="viewer-controls">
+      <button type="button" id="figure-smaller" aria-label="축소">−</button>
+      <output id="figure-scale" aria-live="polite">100%</output>
+      <button type="button" id="figure-larger" aria-label="확대">+</button>
+      <form method="dialog"><button type="submit" autofocus>닫기</button></form>
+    </div>
+  </div>
+  <div class="figure-stage" tabindex="0" aria-label="확대된 자료. 스크롤하여 이동"><div class="figure-content"></div></div>
+</dialog>
 </body>
 </html>

@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val masthead = 0xFF26392F.toInt()
+        val masthead = 0xFF292D3B.toInt()
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(masthead),
             navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         val statusBlock = View(this).apply { setBackgroundColor(masthead) }
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(0xFFF7F7F2.toInt())
+            setBackgroundColor(0xFFF6F7FA.toInt())
             addView(statusBlock, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0))
             addView(webView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         }

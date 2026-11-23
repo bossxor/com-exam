@@ -1,13 +1,13 @@
 :root {
   color-scheme: light;
-  --masthead: #26392F;
-  --paper: #F7F7F2;
-  --ink: #202923;
-  --muted: #526058;
-  --line: #BEC8C0;
-  --brand: #20513E;
-  --brand-soft: #E8EFE7;
-  --green: #215C40;
+  --masthead: #292D3B;
+  --paper: #F6F7FA;
+  --ink: #222636;
+  --muted: #52596A;
+  --line: #C5C9D4;
+  --brand: #41447F;
+  --brand-soft: #ECEEF8;
+  --correct: #303B76;
   --red: #982B28;
   --hint: #F5F1DE;
   --omr: var(--line);
@@ -40,7 +40,7 @@ button:disabled { opacity: .5; cursor: default }
 .resume button { flex-shrink: 0 }
 .resume span, .mode small, .paper-source, .mtag { display: block; font-size: .875rem; color: var(--muted) }
 .field-label, .mode-list legend { display: block; font-weight: 800; margin-bottom: .5rem }
-#round { min-height: 48px; width: 100%; padding: .5rem .7rem; color: var(--ink); background: white; border: 1px solid #83938A; border-radius: 4px }
+#round { min-height: 48px; width: 100%; padding: .5rem .7rem; color: var(--ink); background: white; border: 1px solid #83899A; border-radius: 4px }
 .mode-list { min-width: 0; margin: 1.4rem 0 0; padding: 0; border: 0 }
 .mode { display: flex; align-items: flex-start; gap: .65rem; min-height: 58px; padding: .65rem 0; border-bottom: 1px solid var(--line); cursor: pointer }
 .mode strong { display: block; font-weight: 600 }
@@ -57,23 +57,23 @@ button:disabled { opacity: .5; cursor: default }
 .question-index { margin: .25rem 0 }
 .count { color: var(--muted); font-size: .95rem; font-weight: 600 }
 .question-index button { border: 0; font-size: .9rem }
-.bar { height: 3px; background: #DEE5DD }
+.bar { height: 3px; background: #E0E3EC }
 .bar i { display: block; height: 100%; background: var(--brand) }
 .badge { display: inline-block; margin-top: .7rem; padding: .2rem .45rem; background: var(--hint); font-size: .875rem }
 .question { margin: 1.1rem 0 1rem; font-size: 1.1875rem; line-height: 1.6; font-weight: 700 }
 .question, .choice, .explanation { white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere }
 .choice { display: flex; align-items: flex-start; gap: .7rem; width: 100%; min-height: 52px; padding: .65rem .5rem; border: 0; border-radius: 0; border-bottom: 1px solid var(--line); text-align: left; font: 500 1.0625rem/1.55 var(--sans) }
 .choice[data-index="0"] { border-top: 1px solid var(--line) }
-.mark { display: grid; place-items: center; flex: 0 0 26px; height: 26px; border: 1px solid #728177; border-radius: 50%; font-size: .875rem; font-weight: 600 }
+.mark { display: grid; place-items: center; flex: 0 0 26px; height: 26px; border: 1px solid #737A8D; border-radius: 50%; font-size: .875rem; font-weight: 600 }
 .choice[aria-pressed=true], .choice.correct { background: var(--brand-soft) }
-.choice[aria-pressed=true] .mark, .choice.correct .mark { color: white; border-color: var(--green); background: var(--green) }
+.choice[aria-pressed=true] .mark, .choice.correct .mark { color: white; border-color: var(--correct); background: var(--correct) }
 .choice.wrong { background: #F6E9E5 }
 .choice.wrong .mark { color: white; border-color: var(--red); background: var(--red) }
 .choice:disabled { opacity: 1 }
 .ctext { min-width: 0; flex: 1 }
 .ctext > .visual { max-width: 100%; margin-top: .25rem }
 .choice small { display: block; font-size: .8125rem; font-weight: 800; color: var(--muted) }
-.choice.correct small, .verdict.ok { color: var(--green) }
+.choice.correct small, .verdict.ok { color: var(--correct) }
 .choice.wrong small, .verdict.no, .fail { color: var(--red) }
 #feedback { scroll-margin-bottom: 5rem }
 .explanation { margin-top: 1rem; padding: .75rem; border-left: 3px solid #8A7428; background: var(--hint); line-height: 1.7 }
@@ -94,7 +94,7 @@ details > summary { min-height: 44px; padding: .65rem 0; cursor: pointer; font-w
 .score { font-size: 3rem; line-height: 1.1; font-weight: 800 }
 .score small { margin-left: .15rem; font-size: 1rem }
 .verdict-pill { align-self: flex-end; padding-bottom: .2rem; font-weight: 800 }
-.pass { color: var(--green) }
+.pass { color: var(--correct) }
 .scores { width: 100%; margin: 0 0 1rem }
 .scores :is(th, td) { border: 0; border-bottom: 1px solid var(--line); padding: .55rem .25rem }
 .scores :is(th, td):not(:first-child) { text-align: right }
@@ -134,3 +134,27 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
 .visual .ref-margin-bottom-12 { margin-bottom: 12% }
 .visual .ref-margin-bottom-18 { margin-bottom: 18% }
 .visual .ref-margin-bottom-44 { margin-bottom: 44% }
+
+.brand { display: inline-flex; align-items: center; gap: .55rem }
+.paper-icon, .setup-illustration { display: block; border: 1px solid currentColor; border-radius: 3px }
+.paper-icon { width: 15px; height: 19px; position: relative }
+.paper-icon::after { content: ""; position: absolute; inset: 5px 3px; border-block: 1px solid currentColor }
+.setup { position: relative }
+.setup h1 { padding-inline-end: 4rem }
+.setup-illustration { position: absolute; inset: -.15rem .25rem auto auto; width: 39px; padding: 7px 6px; background: #fff; color: var(--brand); transform: rotate(8deg) }
+.setup-illustration i { display: block; position: relative; margin: 2px 0 5px 9px; height: 4px; border-bottom: 1px solid currentColor }
+.setup-illustration i::before { content: ""; position: absolute; left: -9px; bottom: -1px; width: 4px; height: 4px; border: 1px solid currentColor; border-radius: 50% }
+.zoom-button { margin: .35rem 0 .55rem; color: var(--brand) }
+.visual img { cursor: zoom-in }
+#figure-viewer { width: min(94vw, 780px); max-height: 88vh; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink) }
+#figure-viewer::backdrop { background: rgb(24 26 36 / 70%) }
+.viewer-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .4rem; padding: .55rem .75rem; border-bottom: 1px solid var(--line) }
+.viewer-toolbar h2 { font-size: 1rem }
+.viewer-controls { display: flex; align-items: center; gap: .35rem }
+.viewer-controls button { min-width: 44px; padding-inline: .45rem }
+.viewer-controls output { min-width: 3.25rem; text-align: center; font-variant-numeric: tabular-nums }
+.figure-stage { height: min(65vh, 560px); overflow: auto; background: white }
+.figure-content { zoom: var(--figure-zoom, 1) }
+.figure-content .visual { padding: .55rem; overflow: visible; border-bottom: 1px solid var(--line) }
+.figure-content .visual img { display: block; cursor: default }
+.figure-content .visual .sheet-wrap { overflow: visible }

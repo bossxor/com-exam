@@ -53,29 +53,27 @@
     const roundRow = (id, title, meta, checked = false) =>
       '<label class="row"><input type="radio" name="round" value="' + escape(id) + '"' + (checked ? " checked" : "") +
       '><span class="rbox"><span class="rt">' + escape(title) + '</span><span class="rm">' + escape(meta) + '</span></span></label>';
-    const rows = [roundRow("all", "전체 섞어서",
-      pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항", true)];
-    const youngjin = new Map();
+    const mixed = roundRow("all", "전체 섞어서",
+      pool.some(q => q.source !== "ai") ? "기출·참고 중심 · 60문항" : "AI 문제 · 60문항", true);
+    const groups = new Map();
+    const sourceLabels = { kcci: "기출", "kcci-old": "구 기출", ref: "참고 문제", ai: "AI 문제" };
     for (const bank of banks) {
       const match = /^ref-youngjin-(\d{4})-(\d{2})$/.exec(bank.id);
-      if (!match) {
-        rows.push(roundRow(bank.id, bank.title, bank.questions.length + "문항"));
-        continue;
-      }
-      const [, year, round] = match;
-      if (!youngjin.has(year)) youngjin.set(year, []);
-      youngjin.get(year).push(roundRow(bank.id, year + "년 " + round + "회", bank.questions.length + "문항"));
+      const group = match ? "영진닷컴 " + match[1] + "년" : sourceLabels[bank.source];
+      const title = match ? match[2] + "회" : bank.title;
+      if (!groups.has(group)) groups.set(group, []);
+      groups.get(group).push(roundRow(bank.id, title, bank.questions.length + "문항"));
     }
-    const youngjinRows = [...youngjin].map(([year, rounds]) =>
-      '<details class="round-year"><summary>영진닷컴 ' + year + '년</summary><div class="rows">' +
+    const groupedRounds = [...groups].map(([label, rounds]) =>
+      '<details class="round-year"><summary>' + escape(label) + '</summary><div class="rows">' +
       rounds.join("") + '</div></details>').join("");
     render("home",
       (cur ? '<section class="resume"><div><strong>풀던 세트가 있어요</strong><span>' + escape(modes[modeKey(cur)][0]) +
         ' · ' + (cur.idx + 1) + '/' + cur.ids.length + '</span></div>' + button("이어서 풀기", "resume", 'class="primary"') + '</section>' : "") +
-      '<section class="hero"><h1 tabindex="-1">60분, 60문항.<br>어떻게 풀까요?</h1><p>컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반</p><span class="big" aria-hidden="true">60</span></section>' +
-      (!pool.length ? '<p class="empty">문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p>' :
-        '<section class="card"><h2>1. 문제 고르기</h2><div class="rows">' + rows.join("") +
-        '</div>' + youngjinRows + '</section><section class="card"><h2>2. 풀이 방식</h2>' + Object.entries(modes).map(([key, [title, desc]]) =>
+      '<section class="card"><h1 class="home-title" tabindex="-1">문제 고르기</h1>' +
+      (!pool.length ? '<p class="empty">문제 데이터를 찾을 수 없습니다. 문제집 파일을 추가한 뒤 다시 여세요.</p></section>' :
+        '<div class="rows">' + mixed + '</div>' + groupedRounds +
+        '</section><section class="card"><h2>풀이 방식</h2>' + Object.entries(modes).map(([key, [title, desc]]) =>
           button('<strong>' + title + '</strong><span>' + desc + '</span>', "mode", 'class="mode" data-mode="' + key + '"')).join("") + '</section>'));
   }
 

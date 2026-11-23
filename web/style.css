@@ -1,12 +1,10 @@
 :root {
   color-scheme: light;
   --navy: #10233F;
-  --navy2: #173D65;
-  --mint: #68E1C3;
   --blue: #2457C5;
   --blue-ink: #1B449A;
   --blue-soft: #E8EFFD;
-  --paper: #EEF1F6;
+  --paper: #FAFAF8;
   --ink: #0F1B2D;
   --muted: #46556B;
   --line: #8A99B0;
@@ -24,42 +22,38 @@
 * { box-sizing: border-box }
 html, body { height: 100% }
 body { margin: 0; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font: 1rem/1.55 var(--sans); -webkit-text-size-adjust: 100% }
-.appbar { flex: none; display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 1rem; background: var(--navy); color: #fff }
+.appbar { flex: none; display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 1rem; background: var(--navy); color: #fff }
 .brand { display: flex; align-items: center; gap: .6rem; font-weight: 800; letter-spacing: -.02em }
-.brand svg { width: 28px; height: 28px; flex: none }
-.appbar button { min-height: 40px; padding: 0 1rem; border: 1px solid var(--mint); border-radius: 999px; background: rgba(104, 225, 195, .14); color: #fff; font-weight: 700 }
+.appbar button { min-height: 40px; padding: 0 1rem; border: 1px solid #8A99B0; border-radius: 6px; background: transparent; color: #fff; font-weight: 700 }
 #storage-status { flex: none; margin: 0; padding: .5rem 1rem; background: var(--red-soft); color: var(--red); font-weight: 700 }
 main { flex: 1; min-height: 0; width: 100%; max-width: 680px; margin: 0 auto; padding: 1rem 1rem 0; overflow-y: auto; -webkit-overflow-scrolling: touch }
 h1, h2 { margin: 0 }
 h1:focus { outline: none }
 button, input { font: inherit }
-button { min-height: 48px; padding: 0 1.1rem; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); font: 700 1rem var(--sans); cursor: pointer }
+button { min-height: 48px; padding: 0 1.1rem; border: 1.5px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); font: 700 1rem var(--sans); cursor: pointer }
 button.primary { background: var(--blue); border-color: var(--blue); color: #fff }
 button:active { background: var(--blue-soft) }
 button.primary:active { background: var(--blue-ink) }
 button:disabled { opacity: .45; cursor: default }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px }
-.hero { position: relative; overflow: hidden; margin-bottom: 1rem; padding: 1.5rem 1.25rem; border-radius: 20px; background: linear-gradient(135deg, var(--navy), var(--navy2)); color: #fff }
-.hero h1 { position: relative; font-size: 1.6rem; font-weight: 800; line-height: 1.3; letter-spacing: -.02em }
-.hero p { position: relative; margin: .6rem 0 0; color: #DCE6F5 }
-.hero .big { position: absolute; right: .75rem; top: -.6rem; font: 900 7rem/1 var(--sans); color: rgba(255, 255, 255, .1) }
-.card { margin-bottom: 1rem; padding: 1.1rem; background: #fff; border: 1px solid #C9D2E0; border-radius: 20px; box-shadow: 0 6px 20px rgba(16, 35, 63, .08) }
+.card { margin-bottom: 1.25rem; padding: .25rem 1.1rem 1.25rem; border-bottom: 1px solid #C9D2E0 }
+.home-title, .scorecard > h1 { margin-bottom: .8rem; font-size: 1.25rem; font-weight: 800 }
 .card > h2 { margin-bottom: .8rem; font-size: 1.0625rem; font-weight: 800 }
-.resume { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: 1rem; background: var(--blue-soft); border: 2px solid var(--blue); border-radius: 16px }
+.resume { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: .7rem 1rem; background: var(--blue-soft); border-left: 3px solid var(--blue) }
 .resume div { display: flex; flex-direction: column; min-width: 0 }
 .resume span { color: var(--muted); font-size: .875rem }
 .rows { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem }
 .card > .rows > .row:first-child { grid-column: 1 / -1 }
 .row { position: relative; display: block }
 .row input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer }
-.rbox { display: flex; align-items: center; gap: .4rem; height: 100%; min-height: 48px; padding: .4rem .75rem; border: 1.5px solid var(--line); border-radius: 14px; background: #fff }
+.rbox { display: flex; align-items: center; gap: .4rem; height: 100%; min-height: 48px; padding: .4rem .75rem; border: 1px solid var(--line); border-radius: 6px; background: #fff }
 .rt { flex: 1; font-size: .9375rem; font-weight: 700; line-height: 1.3 }
 .rm { display: none; color: var(--muted); font-size: .8125rem; text-align: right }
 .card > .rows > .row:first-child .rm { display: inline }
 .row input:checked + .rbox { border: 2px solid var(--blue); background: var(--blue-soft) }
 .row input:checked + .rbox::before { content: "\2713"; color: var(--blue); font-weight: 800 }
 .row input:focus-visible + .rbox { outline: 3px solid var(--blue); outline-offset: 2px }
-.mode { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 72px; margin-top: .6rem; padding: .9rem 1.1rem; border: 2px solid var(--navy); border-radius: 16px; text-align: left }
+.mode { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 60px; margin-top: .3rem; padding: .5rem .75rem; border: 1px solid var(--line); border-radius: 6px; text-align: left }
 .mode strong { font-size: 1.125rem; font-weight: 800 }
 .mode span { color: var(--muted); font-size: .875rem; font-weight: 500 }
 .empty { padding: 1rem; background: var(--hint); border-radius: 12px }
@@ -75,7 +69,7 @@ button:disabled { opacity: .45; cursor: default }
 .bar i.low { background: var(--red) }
 .badge { display: inline-block; margin: .6rem 0 0; padding: .2rem .7rem; border-radius: 999px; background: var(--hint); border: 1px solid #E5C766; font-size: .875rem; font-weight: 700 }
 .question { margin: .9rem 0 1rem; font: 700 1.1875rem/1.6 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
-.choice { display: flex; align-items: flex-start; gap: .8rem; width: 100%; min-height: 56px; margin: .6rem 0; padding: .8rem .9rem; border: 1.5px solid var(--line); border-radius: 14px; text-align: left; font: 500 1.0625rem/1.55 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
+.choice { display: flex; align-items: flex-start; gap: .8rem; width: 100%; min-height: 56px; margin: .6rem 0; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 6px; text-align: left; font: 500 1.0625rem/1.55 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
 .mark { display: grid; place-items: center; flex: 0 0 30px; height: 30px; margin-top: 1px; border: 1.5px solid var(--line); border-radius: 50%; background: #fff; font: 700 .9rem var(--sans) }
 .choice[aria-pressed=true] { border-color: var(--blue); background: var(--blue-soft) }
 .choice[aria-pressed=true] .mark { border-color: var(--blue); background: var(--blue); color: #fff }
@@ -89,7 +83,7 @@ button:disabled { opacity: .45; cursor: default }
 .choice.correct small { background: var(--green) }
 .choice.wrong small { background: var(--red) }
 #feedback { scroll-margin-bottom: 7rem }
-.explanation { margin: 1rem 0 0; padding: 1rem; border: 1px solid #E5C766; border-left: 5px solid #C58A00; border-radius: 12px; background: var(--hint); font: 400 1rem/1.7 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
+.explanation { margin: 1rem 0 0; padding: 1rem; border-left: 3px solid #A16D00; background: var(--hint); font: 400 1rem/1.7 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere }
 .verdict { margin: 0 0 .4rem; font-weight: 800 }
 .verdict.ok { color: var(--green) }
 .verdict.no { color: var(--red) }
@@ -102,10 +96,10 @@ details > summary { min-height: 44px; padding: .6rem 0; cursor: pointer; font-we
 .grid button { min-height: 44px; padding: 0 }
 .grid .answered { border-color: var(--blue); background: var(--blue); color: #fff }
 .grid [aria-current] { outline: 3px solid var(--navy); outline-offset: 1px }
-.scorecard { margin: 0 0 1rem; padding: 1.5rem 1rem; text-align: center; border-radius: 20px; background: linear-gradient(135deg, var(--navy), var(--navy2)); color: #fff }
-.scorecard .label { margin: 0; color: #DCE6F5 }
-.score { margin: .2rem 0; font: 900 3.5rem/1.1 var(--sans) }
-.score small { font-size: 1.25rem; font-weight: 700; color: #DCE6F5 }
+.scorecard { margin: 0 0 1rem; padding: .25rem 1.1rem 1rem; border-bottom: 1px solid #C9D2E0 }
+.scorecard .label { margin: 0; color: var(--muted) }
+.score { margin: .2rem 0; font: 800 2.75rem/1.1 var(--sans); font-variant-numeric: tabular-nums }
+.score small { font-size: 1.25rem; font-weight: 700; color: var(--muted) }
 .verdict-pill { display: inline-block; margin: .4rem 0 0; padding: .3rem 1.2rem; border-radius: 999px; font-weight: 800 }
 .pass { background: var(--green); color: #fff }
 .fail { background: var(--red); color: #fff }
@@ -147,17 +141,18 @@ th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left 
 .visual .ref-margin-bottom-44 { margin-bottom: 44% }
 
 /* Keep Korean words intact where possible and let long formulas wrap. */
-.hero p, .rt, .question, .choice, .explanation, details > summary {
+.rt, .question, .choice, .explanation, details > summary {
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
 @media (max-width: 480px) {
   main { padding-inline: .625rem }
-  .question-card { padding-inline: .75rem }
+  .card, .scorecard { padding-inline: .75rem }
   .choice { gap: .5rem; padding-inline: .65rem }
   .explanation { padding-inline: .625rem }
   .dock { margin-inline: -.625rem; padding-inline: .625rem }
 }
 
-.round-year { margin-top: .5rem; border-top: 1px solid var(--line) }
+.round-year { border-bottom: 1px solid #C9D2E0 }
+.round-year > .rows { padding-bottom: .65rem }
 .ctext > .visual { max-width: 100%; margin-top: .25rem }
